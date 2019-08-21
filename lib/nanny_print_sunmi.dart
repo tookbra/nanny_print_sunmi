@@ -26,4 +26,18 @@ class NannyPrintSunmi {
   Future<Null> printSelf() async {
     await _channel.invokeMethod("printSelf");
   }
+
+  Future<Null> printText({ String text }) async {
+    Map<String,dynamic> args = <String,dynamic>{};
+    args.putIfAbsent("text", () => text);
+    await _channel.invokeMethod("printText",args);
+  }
+
+  Future<Null> printTextWithFont({ String text, String fontName, int fontSize }) async {
+    Map<String,dynamic> args = <String,dynamic>{};
+    args.putIfAbsent("text", () => text);
+    args.putIfAbsent("fontName", () => fontName);
+    args.putIfAbsent("fontSize", () => fontSize);
+    await _channel.invokeMethod("printTextWithFont",args);
+  }
 }
