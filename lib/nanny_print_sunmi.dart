@@ -62,11 +62,12 @@ class NannyPrintSunmi {
     return await _channel.invokeMethod("setFontSize",args);
   }
 
-  Future<bool> printOrder({ String title, int total, List<String> body }) async {
+  Future<bool> printOrder({ String title, int total, List<String> body, String remark }) async {
     Map<String,dynamic> args = <String,dynamic>{};
     args.putIfAbsent("title", () => title);
     args.putIfAbsent("total", () => total);
     args.putIfAbsent("body", () => body);
+    args.putIfAbsent("remark", () => remark);
     return await _channel.invokeMethod("printOrder",args);
   }
 

@@ -161,7 +161,8 @@ public class NannyPrintSunmiPlugin implements MethodCallHandler {
         String title = call.argument("title");
         Integer total = call.argument("total");
         List<String> body = call.argument("body");
-        this.printOrder(title, total, body);
+        String remark = call.argument("remark");
+        this.printOrder(title, total, body, remark);
         result.success(true);
         break;
       case "getStringWidth":
@@ -371,7 +372,8 @@ public class NannyPrintSunmiPlugin implements MethodCallHandler {
             || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION;
   }
 
-  private void printOrder(final String title, final Integer total, final List<String> body){
+  private void printOrder(final String title, final Integer total, 
+    final List<String> body, final String remark){
     ThreadPoolManager.getInstance().executeTask(new Runnable() {
       @Override
       public void run() {
@@ -387,6 +389,8 @@ public class NannyPrintSunmiPlugin implements MethodCallHandler {
           }
           woyouService.printText(PrinterUtils.printLine(), callback);
           woyouService.printText(PrinterUtils.printInOneLine("合计", "x" + total), callback);
+          woyouService.lineWrap(3, callback);
+          woyouService.printText(remark, callback);
           woyouService.lineWrap(3, callback);
           woyouService.printQRCode("20", 10, 2, callback);
           woyouService.lineWrap(5, callback);
