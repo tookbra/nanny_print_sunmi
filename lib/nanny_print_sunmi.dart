@@ -62,12 +62,22 @@ class NannyPrintSunmi {
     return await _channel.invokeMethod("setFontSize",args);
   }
 
-  Future<bool> printOrder({ String title, int total, List<String> body, String remark }) async {
+  /// 打印订单
+  /// [title] 标题
+  /// [total] 合计
+  /// [body]  内容
+  /// [createdTime] 创建时间
+  /// [remark] 备注
+  /// [orderNo] 订单号
+  /// [subTitle] 父标题
+  Future<bool> printOrder({ String title, int total, List<String> body, List<String> subTitles, String orderNo, String remark }) async {
     Map<String,dynamic> args = <String,dynamic>{};
     args.putIfAbsent("title", () => title);
     args.putIfAbsent("total", () => total);
     args.putIfAbsent("body", () => body);
     args.putIfAbsent("remark", () => remark);
+    args.putIfAbsent("subTitles", () => subTitles);
+    args.putIfAbsent("orderNo", () => orderNo);
     return await _channel.invokeMethod("printOrder",args);
   }
 

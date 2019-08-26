@@ -162,7 +162,9 @@ public class NannyPrintSunmiPlugin implements MethodCallHandler {
         Integer total = call.argument("total");
         List<String> body = call.argument("body");
         String remark = call.argument("remark");
-        this.printOrder(title, total, body, remark);
+        List<String> subTitles = call.argument("subTitles");
+        String orderNo = call.argument("orderNo");
+        this.printOrder(title, total, body, remark, subTitles, orderNo);
         result.success(true);
         break;
       case "getStringWidth":
@@ -373,7 +375,7 @@ public class NannyPrintSunmiPlugin implements MethodCallHandler {
   }
 
   private void printOrder(final String title, final Integer total, 
-    final List<String> body, final String remark){
+    final List<String> body, final String remark, final List<String> subTitles, final String orderNo){
     ThreadPoolManager.getInstance().executeTask(new Runnable() {
       @Override
       public void run() {
@@ -382,6 +384,11 @@ public class NannyPrintSunmiPlugin implements MethodCallHandler {
           woyouService.setFontSize(42, callback);
           woyouService.printText(title, callback);
           woyouService.setFontSize(24, callback);
+          woyouService.setAlignment(0, callback);
+          for(String text : subTitles) {
+            woyouService.printText(text, callback);
+          }
+          woyouService.setAlignment(1, callback);
           woyouService.printText(PrinterUtils.printLine(), callback);
           woyouService.printText(PrinterUtils.printInOneLine("产品", "数量") + "\n", callback);
           for(String text : body) {
@@ -389,10 +396,12 @@ public class NannyPrintSunmiPlugin implements MethodCallHandler {
           }
           woyouService.printText(PrinterUtils.printLine(), callback);
           woyouService.printText(PrinterUtils.printInOneLine("合计", "x" + total), callback);
+          if(remark != null && remark.trim() != "") {
+            woyouService.lineWrap(3, callback);
+            woyouService.printText(remark, callback);
+          }
           woyouService.lineWrap(3, callback);
-          woyouService.printText(remark, callback);
-          woyouService.lineWrap(3, callback);
-          woyouService.printQRCode("20", 10, 2, callback);
+          woyouService.printQRCode(orderNo, 10, 2, callback);
           woyouService.lineWrap(5, callback);
         } catch (RemoteException e){
           e.printStackTrace();
