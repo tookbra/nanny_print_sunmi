@@ -160,11 +160,12 @@ public class NannyPrintSunmiPlugin implements MethodCallHandler {
       case "printOrder":
         String title = call.argument("title");
         Integer total = call.argument("total");
+        Integer printTotal = call.argument("printTotal");
         List<String> body = call.argument("body");
         String remark = call.argument("remark");
         List<String> subTitles = call.argument("subTitles");
         String orderNo = call.argument("orderNo");
-        this.printOrder(title, total, body, remark, subTitles, orderNo);
+        this.printOrder(title, total, printTotal, body, remark, subTitles, orderNo);
         result.success(true);
         break;
       case "getStringWidth":
@@ -374,35 +375,37 @@ public class NannyPrintSunmiPlugin implements MethodCallHandler {
             || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION;
   }
 
-  private void printOrder(final String title, final Integer total, 
+  private void printOrder(final String title, final Integer total, final Integer printTotal,
     final List<String> body, final String remark, final List<String> subTitles, final String orderNo){
     ThreadPoolManager.getInstance().executeTask(new Runnable() {
       @Override
       public void run() {
         try {
-          woyouService.setAlignment(1, callback);
-          woyouService.setFontSize(42, callback);
-          woyouService.printText(title, callback);
-          woyouService.setFontSize(24, callback);
-          woyouService.setAlignment(0, callback);
-          for(String text : subTitles) {
-            woyouService.printText(text, callback);
-          }
-          woyouService.setAlignment(1, callback);
-          woyouService.printText(PrinterUtils.printLine(), callback);
-          woyouService.printText(PrinterUtils.printInOneLine("产品", "数量") + "\n", callback);
-          for(String text : body) {
-            woyouService.printOriginalText(text, callback);
-          }
-          woyouService.printText(PrinterUtils.printLine(), callback);
-          woyouService.printText(PrinterUtils.printInOneLine("合计", "x" + total), callback);
-          if(remark != null && remark.trim() != "") {
+          for(int i = 0; i < printTotal; i ++) {
+            woyouService.setAlignment(1, callback);
+            woyouService.setFontSize(42, callback);
+            woyouService.printText(title, callback);
+            woyouService.setFontSize(24, callback);
+            woyouService.setAlignment(0, callback);
+            for(String text : subTitles) {
+              woyouService.printText(text, callback);
+            }
+            woyouService.setAlignment(1, callback);
+            woyouService.printText(PrinterUtils.printLine(), callback);
+            woyouService.printText(PrinterUtils.printInOneLine("产品", "数量") + "\n", callback);
+            for(String text : body) {
+              woyouService.printOriginalText(text, callback);
+            }
+            woyouService.printText(PrinterUtils.printLine(), callback);
+            woyouService.printText(PrinterUtils.printInOneLine("合计", "x" + total), callback);
+            if(remark != null && remark.trim() != "") {
+              woyouService.lineWrap(3, callback);
+              woyouService.printText(remark, callback);
+            }
             woyouService.lineWrap(3, callback);
-            woyouService.printText(remark, callback);
+            woyouService.printQRCode(orderNo, 10, 2, callback);
+            woyouService.lineWrap(5, callback);
           }
-          woyouService.lineWrap(3, callback);
-          woyouService.printQRCode(orderNo, 10, 2, callback);
-          woyouService.lineWrap(5, callback);
         } catch (RemoteException e){
           e.printStackTrace();
         }
