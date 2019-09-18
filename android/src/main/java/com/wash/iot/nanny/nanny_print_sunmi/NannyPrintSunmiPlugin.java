@@ -126,6 +126,15 @@ public class NannyPrintSunmiPlugin implements MethodCallHandler {
         bindingService();
         result.success(true);
         break;
+      case "unBind":
+        unBindService();
+        result.success(true);
+        break;
+      case "getInfo":
+        int code = call.argument("code");
+        getInfo(code);
+        result.success(this.getInfo(code));
+        break;
       case "printSelf":
         printSelf(result);
         result.success(true);
@@ -204,6 +213,39 @@ public class NannyPrintSunmiPlugin implements MethodCallHandler {
     intent.setAction("woyou.aidlservice.jiuiv5.IWoyouService");
     context.startService(intent);
     context.bindService(intent, connService, Context.BIND_AUTO_CREATE);
+  }
+
+  /**
+   * unbind
+   */
+  public void unBindService(){
+    this.context.unbindService(connService);
+  }
+
+  /**
+   *
+   * @param code 1,2,3,4
+   * @return String
+   */
+  public String getInfo(int code){
+    String output = null;
+    try {
+      if(code == 1){
+        output = this.woyouService.getPrinterSerialNo();
+      } else if(code == 2){
+        output = this.woyouService.getPrinterModal();
+      } else if(code == 3){
+        output = this.woyouService.getPrinterVersion();
+      } else if(code == 4){
+        output = this.woyouService.getServiceVersion();
+      } else {
+        output = "No information found.";
+      }
+      return output;
+    } catch (RemoteException e){
+      e.printStackTrace();
+      return output;
+    }
   }
 
   /**

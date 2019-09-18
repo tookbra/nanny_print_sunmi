@@ -15,6 +15,25 @@ class NannyPrintSunmi {
   static NannyPrintSunmi _instance = new NannyPrintSunmi._();
   static NannyPrintSunmi get instance => _instance;
 
+  // INFORMATION
+  Future<dynamic> getPrinterInfo({GETINFO code}) async {
+    Map<String,dynamic> args = <String,dynamic>{};
+
+    if(code == GETINFO.PRINTER_SERIALNO){
+      args.putIfAbsent("code", () => 1);
+    } else if(code == GETINFO.PRINTER_MODAL){
+      args.putIfAbsent("code", () => 2);
+    } else if(code == GETINFO.PRINTER_VERSION){
+      args.putIfAbsent("code", () => 3);
+    }else if(code == GETINFO.SERVICE_VERSION){
+      args.putIfAbsent("code", () => 4);
+    } else {
+      return "No Information found";
+    }
+
+    return await _channel.invokeMethod("getInfo",args);
+  }
+
   Future<void> bindPrinter() async {
     await _channel.invokeMethod("bind");
   }
@@ -90,4 +109,5 @@ class NannyPrintSunmi {
   }
 }
 
+enum GETINFO { PRINTER_SERIALNO, PRINTER_MODAL, PRINTER_VERSION, SERVICE_VERSION }
 enum TEXTALIGN { LEFT, CENTER, RIGHT }
